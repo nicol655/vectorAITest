@@ -2,11 +2,11 @@ from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 
 from blueprints.albums.routes import routes
-from settings import database, metadata
-
+from settings import config, database, metadata, middleware
 
 app = Starlette(
     routes=routes,
+    middleware=middleware,
     on_startup=[database.connect],
     on_shutdown=[database.disconnect]
 )
