@@ -1,8 +1,9 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import arrayMove from 'array-move';
 
 import Card from "../../components/card/Card"
+import Loader from "../../components/loader/Loader";
 import { getAllCards } from "../../__fixtures__/cards"
 import { 
   CardsContained, CardsContainer, IndexContainer, IndexTitle 
@@ -22,9 +23,28 @@ interface IOnSortEnd {
 
 const Index = () => {
 
-  const [cards, setCards] = useState(getAllCards)
+  const [albums, setAlbums] = useState<ICardObject[]>([])
+  const [loading, setLoading] = useState(false)
+  const albums_endpoint = process.env.REACT_APP_PUBLIC_BACK_ALBUMS_ENDPOINT || null
 
-  
+  const getAlbums = () => {
+    if(albums_endpoint){
+      fetch(albums_endpoint)
+      .then((res) => {
+        if (res.status === 200) return res.json();
+        setLoading(false);
+        throw Error(res.statusText);
+      })
+      .then((json) => {
+        setAlbums(json);
+        setLoading(false);
+      })
+      .catch(() => {});
+    } else {
+      setAlbums(getAllCards)
+    }
+  }
+
   const SortableItem = SortableElement(({value}: any) => {
     return(
       <CardsContained>
@@ -45,13 +65,19 @@ const Index = () => {
   })
 
   const onSortEnd = ({oldIndex, newIndex}: IOnSortEnd) => {
-    setCards(arrayMove(cards, oldIndex, newIndex))
+    setAlbums(arrayMove(albums, oldIndex, newIndex))
   }
+
+  useEffect(() => {
+    setLoading(true);
+    getAlbums()
+  }, []);
     
   return(
     <IndexContainer>
       <IndexTitle>Cats List</IndexTitle>
-        <SortableList items={cards} onSortEnd={onSortEnd} axis="xy"/>
+      { loading && <Loader />}
+      <SortableList items={albums} onSortEnd={onSortEnd} axis="xy"/>
     </IndexContainer>
   )
 }
