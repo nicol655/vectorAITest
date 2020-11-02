@@ -10,7 +10,7 @@ class AlbumFactory:
 
   async def fetch_all_albums(self, request):
     """Fetch all albums from SQLAlchemy database."""
-    query = self.model.select()
+    query = self.model.select().order_by(self.model.c.position.asc())
     albums = await database.fetch_all(query)
     return albums
 
@@ -24,4 +24,25 @@ class AlbumFactory:
       img_src=request.get('img_src'),
     )
     await database.execute(query)
-    raise RuntimeError()
+
+  @database.transaction()
+  async def update(self, album_id):
+    """Update an album from SQLAlchemy database."""
+    pass
+
+
+  @database.transaction()
+  async def delete(self, album_id):
+    """Delete an album from SQLAlchemy database."""
+    pass
+
+  @database.transaction()
+  async def bulk_update(self, data):
+    """Update list albums from SQLAlchemy database."""
+    for album in data:
+      query = (
+        self.model.update()
+          .where(self.model.c.id == album.get('id'))
+          .values(position=album.get('position'))
+      )
+      await database.execute(query)

@@ -1,4 +1,5 @@
 """Album views module."""
+from json import loads
 from starlette.responses import JSONResponse
 
 from .factory import AlbumFactory
@@ -20,6 +21,7 @@ class AlbumViews:
     albums = await self.factory.fetch_all_albums(request)
     response = [
       {
+        "id": album.get("id"),
         "type": album.get("type"),
         "title": album.get("title"),
         "position": album.get("position"),
@@ -58,10 +60,18 @@ class AlbumViews:
     }
     return JSONResponse(response)
 
-  async def update(self, request):
+  async def update(self, album_id):
     """Update existing album based on the request data."""
+    await self.factory.update(album_id)
     pass
 
-  async def delete(self, request):
+  async def delete(self, album_id):
     """Delete existing album based on the request data."""
+    await self.factory.delete(album_id)
     pass
+
+  async def bulk_update(self, request):
+    """Update existing albums based on the list request data."""
+    data = await request.body()
+    await self.factory.bulk_update(loads(data))
+    return JSONResponse({"message": "Albums reordered"})

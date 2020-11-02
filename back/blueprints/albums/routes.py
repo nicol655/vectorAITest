@@ -8,4 +8,6 @@ routes = [
     Route("/albums/", endpoint=AlbumViews().create, methods=["POST"]),
     Route("/albums/<pk>/", endpoint=AlbumViews().update, methods=["PUT"]),
     Route("/albums/<pk>/", endpoint=AlbumViews().delete, methods=["DELETE"]),
+    Route("/albums/bulk_update/", endpoint=AlbumViews().bulk_update, 
+        methods=["POST"]),
 ]

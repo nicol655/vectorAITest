@@ -9,7 +9,12 @@ config = Config('.env')
 DATABASE_URL = config('DATABASE_URL')
 
 middleware = [
-  Middleware(CORSMiddleware, allow_origins=['*'])
+  Middleware(
+    CORSMiddleware, 
+    allow_origins=['*'],
+    allow_headers=['*'],
+    allow_methods=['*'],
+  )
 ]
 
 metadata = sqlalchemy.MetaData()
