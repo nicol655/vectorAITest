@@ -26,6 +26,7 @@ const Index = () => {
   const [albums, setAlbums] = useState<ICardObject[]>([])
   const [loading, setLoading] = useState(false)
   const albums_endpoint = process.env.REACT_APP_PUBLIC_BACK_ALBUMS_ENDPOINT || null
+  const [initialAlbums, setInitialAlbums] = useState<ICardObject[]>([])
 
   const getAlbums = () => {
     if(albums_endpoint){
@@ -37,6 +38,7 @@ const Index = () => {
       })
       .then((json) => {
         setAlbums(json);
+        setInitialAlbums(json)
         setLoading(false);
       })
       .catch(() => {});
@@ -68,6 +70,27 @@ const Index = () => {
     setAlbums(arrayMove(albums, oldIndex, newIndex))
   }
 
+  const setNewOrder = () => {
+    let newAlbums: ICardObject[] = []
+    albums.map((album: ICardObject, idx: number) => {
+      if(initialAlbums[idx] !== album){
+        album.position = idx
+        newAlbums.push(album)
+      }
+    })
+    fetch(`${albums_endpoint}bulk_update/`, {
+      method: 'POST',
+      body: JSON.stringify(newAlbums),
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then((res) => {
+      if (res.status === 200) return res.json();
+      throw Error(res.statusText);
+    })
+    .then(() => {})
+    .catch(() => {});
+  }
+
   useEffect(() => {
     setLoading(true);
     getAlbums()
@@ -75,7 +98,10 @@ const Index = () => {
     
   return(
     <IndexContainer>
-      <IndexTitle>Cats List</IndexTitle>
+      <IndexTitle>
+        Cats List
+        <button onClick={setNewOrder}>Update</button>
+      </IndexTitle>
       { loading && <Loader />}
       <SortableList items={albums} onSortEnd={onSortEnd} axis="xy"/>
     </IndexContainer>

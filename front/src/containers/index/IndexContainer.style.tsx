@@ -21,4 +21,13 @@ export const IndexTitle = styled.h1`
   border-bottom: 1px solid #dcdcdc;
   color: #565656;
   margin: 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  button{
+    font-size: 14px;
+    height: 30px;
+    cursor: pointer;
+  }
 `
