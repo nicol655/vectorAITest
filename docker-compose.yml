@@ -1,0 +1,51 @@
+version: "3"
+
+services:
+  db:
+    container_name: vectorai-db
+    image: postgres
+    env_file:
+      - ./docker/devel/env/db/public
+    volumes:
+      - vectorai-data:/var/lib/postgresql/data
+
+  back:
+    container_name: vectorai-back
+    build:
+      context: .
+      dockerfile: docker/devel/Dockerfile.python
+    env_file:
+      - ./docker/devel/env/back/public
+    volumes:
+      - ./back:/app
+    ports:
+      - "5000:80"
+    depends_on:
+      - db
+    links:
+      - wdb
+
+  front:
+    container_name: vectorai-front
+    build:
+      context: .
+      dockerfile: docker/devel/Dockerfile.react
+    env_file:
+      - ./docker/devel/env/front/public
+    volumes:
+      - "./front/:/app"
+      - "/app/node_modules"
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+
+  wdb:
+    image: kozea/wdb:3.2.5
+    ports:
+      - "1984:1984"
+
+volumes:
+  vectorai-data:
+    external: true

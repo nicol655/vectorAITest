@@ -1,0 +1,11 @@
+FROM tiangolo/uvicorn-gunicorn-starlette:python3.7
+
+WORKDIR /app
+
+COPY ./back/requirements.txt requirements.txt
+
+RUN pip install -r requirements.txt --no-cache-dir
+
+COPY ./back /app
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--debug", "--port", "80", "--reload-dir", "/app"]

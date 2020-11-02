@@ -1,0 +1,3 @@
+POSTGRES_DB=vectorai
+POSTGRES_USER=vectorai
+POSTGRES_PASSWORD=vectorai

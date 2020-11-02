@@ -1,0 +1,7 @@
+FLASK_ENV=development
+APP_SETTINGS=config.DevelopmentConfig
+DATABASE_URL=postgresql://vectorai:vectorai@db:5432/vectorai
+
+WDB_SOCKET_SERVER=wdb
+WDB_NO_BROWSER_AUTO_OPEN=true
+      
